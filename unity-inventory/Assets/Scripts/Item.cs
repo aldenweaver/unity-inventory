@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/* Code adapted from inScope Studios tutorial:
+ * http://inscopestudios.com/Pages/Unity/Inventory.html
+ * Typed and commented by Alden Weaver, Jan - Feb 2015
+ */
+
+using UnityEngine;
 using System.Collections;
 
 // Create the ItemTypes
