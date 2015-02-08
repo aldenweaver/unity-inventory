@@ -166,7 +166,7 @@ public class Inventory : MonoBehaviour {
 				if (!temp.IsEmpty) {
 					if ((temp.CurrentItem.type == item.type) && temp.IsAvailable) {
 						temp.AddItem(item);
-						//return true; // Slows down game to where collision doesn't collect
+						return true; 
 					}
 				}
 			}
