@@ -226,7 +226,7 @@ public class Inventory : MonoBehaviour {
 
 			}	
 		} else if (to == null) {
-			to = GetComponent<Slot>();
+			to = clicked.GetComponent<Slot>();
 
 			// Make sure the hovering object disappears after item is placed
 			Destroy(GameObject.Find("Hover"));

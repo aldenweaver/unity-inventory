@@ -110,10 +110,10 @@ public class Slot : MonoBehaviour, IPointerClickHandler {
 		
 		// Update stack text if there are more than 1 items now
 		if (items.Count > 1) {
-			stackText.text = items.Count.ToString();
+			stackText.text = items.Count.ToString ();
+		} else { // Else this is the first item and we need to change the slot's sprite
+			ChangeSprite (CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted);
 		}
-		
-		ChangeSprite(CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted);
 	}
 
 
@@ -136,7 +136,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler {
 		// If there is something in the slot,
 		// pop it from the slot stack and use it
 		if (!IsEmpty) {
-			items.Pop().Use();
+			items.Pop();
 
 			// If more than 1 item left in stack, update text; 
 			// else there are 0 or 1 items left so text is not needed so don't show it
