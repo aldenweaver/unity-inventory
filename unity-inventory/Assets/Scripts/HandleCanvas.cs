@@ -16,9 +16,5 @@ public class HandleCanvas : MonoBehaviour {
 		scaler = GetComponent<CanvasScaler> ();
 		scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 }

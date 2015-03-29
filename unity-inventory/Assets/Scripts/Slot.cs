@@ -1,165 +1,190 @@
-﻿/* Code adapted from inScope Studios tutorial:
- * http://inscopestudios.com/Pages/Unity/Inventory.html
- * Typed and commented by Alden Weaver, Jan - Feb 2015
- */
-
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class Slot : MonoBehaviour, IPointerClickHandler {
-
-	/* PROPERTIES */
-
-	// Holds all objects in the stack
+public class Slot : MonoBehaviour, IPointerClickHandler
+{
+	#region variables
+	
+	/// <summary>
+	/// The items that the slot contains
+	/// </summary>
 	private Stack<Item> items;
-
-	// Text field to display number of items
-	public Text stackText;
-
-	// Sprites used to show the different states of the slots
+	
+	/// <summary>
+	/// Indicates the number of items stacked on the slot
+	/// </summary>
+	public Text stackTxt;
+	
+	/// <summary>
+	/// The slot's empty sprite
+	/// </summary>
 	public Sprite slotEmpty;
+	
+	/// <summary>
+	/// The slot's highlighted sprite
+	/// </summary>
 	public Sprite slotHighlight;
-
-	// Implementation of the IPointerClickHandler interface
-	// Adds the ability to click on an item in the inventory to use it
-	// Param eventData holds information of the button that was clicked
-	#region IPointerClickHandler implementation
-	public void OnPointerClick (PointerEventData eventData)
-	{
-		if (eventData.button == PointerEventData.InputButton.Right) {
-			UseItem();
-		}
-	}
+	
 	#endregion
-
-	// Public property to access Slot's items
-	public Stack<Item> Items {
+	
+	#region properties
+	
+	/// <summary>
+	/// A property for accessing the stack of items
+	/// </summary>
+	public Stack<Item> Items
+	{
 		get { return items; }
 		set { items = value; }
 	}
-
-	// Public property to access the Slot class and check if it is empty
-	public bool IsEmpty {
-		get {return items.Count == 0;}
+	
+	/// <summary>
+	/// Indicates if the slot is empty
+	/// </summary>
+	public bool IsEmpty
+	{
+		get { return items.Count == 0; }
 	}
-
-	// Public property that returns the type of item in the slot right now
-	public Item CurrentItem {
-		get {return items.Peek ();}
+	
+	/// <summary>
+	/// Indicates if the slot is avaialble for stacking more items
+	/// </summary>
+	public bool IsAvailable
+	{
+		get {return CurrentItem.maxStackSize > items.Count; }
 	}
-
-	// Public property that tells whether or not the slot is available
-	public bool IsAvailable {
-		get {return CurrentItem.maxStackSize > items.Count;}
+	
+	/// <summary>
+	/// Returns the current item in the stack
+	/// </summary>
+	public Item CurrentItem
+	{
+		get { return items.Peek(); }
 	}
-
-
-
-	/* METHODS */
+	
+	#endregion  
 	
 	// Use this for initialization
-	void Start () {
-		// Instatiate items
+	void Start () 
+	{   
+		//Instantiates the items stack
 		items = new Stack<Item>();
-
-		// Reference to the slot and text object's Rect Transforms
-		RectTransform slotRect = GetComponent<RectTransform>();
-		RectTransform textRect = stackText.GetComponent<RectTransform>();
-
-		// Calculate the scale factor as 60% of the text's width (cast to int)
-		int textScaleFactor = (int)(slotRect.sizeDelta.x * 0.6);
-
-		// Use the textScaleFactor to set the min and max text sizes
-		stackText.resizeTextMaxSize = textScaleFactor;
-		stackText.resizeTextMinSize = textScaleFactor;
-
-		// Set the position of the RectTransform
-		textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, slotRect.sizeDelta.x);
-		textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, slotRect.sizeDelta.y);
-	}
-
-
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-
-	// Changes the state of the Sprite to the opposite
-	private void ChangeSprite(Sprite neutral, Sprite highlight) {
-		// Set the neutral sprite
-		GetComponent<Image>().sprite = neutral;
-
-		// Create a state for the sprite 
-		// so we can set sprites for different states
-		SpriteState state = new SpriteState ();
-		state.highlightedSprite = highlight;
-		state.pressedSprite = neutral;
-
-		// Set the sprite's state in the scene
-		GetComponent<Button>().spriteState = state;
-	}
-
-
-	// Adds an item to the inventory
-	public void AddItem(Item item) {
-		items.Push(item);
 		
-		// Update stack text if there are more than 1 items now
-		if (items.Count > 1) {
-			stackText.text = items.Count.ToString ();
-		} else { // Else this is the first item and we need to change the slot's sprite
-			ChangeSprite (CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted);
+		//Creates a reference to the slot slot's recttransform
+		RectTransform slotRect = GetComponent<RectTransform>();
+		
+		//Creates a reference to the stackTxt's recttransform
+		RectTransform txtRect = stackTxt.GetComponent<RectTransform>();
+		
+		//Calculates the scalefactor of the text by taking 60% of the slots width
+		int txtScleFactor = (int)(slotRect.sizeDelta.x * 0.60);
+		
+		//Sets the min and max textSize of the stackTxt
+		stackTxt.resizeTextMaxSize = txtScleFactor;
+		stackTxt.resizeTextMinSize = txtScleFactor;
+		
+		//Sets the actual size of the txtRect
+		txtRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, slotRect.sizeDelta.x);
+		txtRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, slotRect.sizeDelta.y);
+	}
+	
+	/// <summary>
+	/// Adds a single item to th inventory
+	/// </summary>
+	/// <param name="item">The item to add</param>
+	public void AddItem(Item item)
+	{
+		items.Push(item); //Adds the item to the stack
+		
+		if (items.Count > 1) //Checks if we have a stacked item
+		{
+			stackTxt.text = items.Count.ToString(); //If the item is stacked then we need to write the stack number on top of the icon
 		}
+		
+		ChangeSprite(item.spriteNeutral, item.spriteHighlighted); //Changes the sprite so that it reflects the item the slot is occupied by
 	}
-
-
-	// Adds a stack of items to the inventory
-	public void AddItems(Stack<Item> items) {
-		this.items = new Stack<Item> (items);
-
-		// If more than 1 item left in stack, update text; 
-		// else there are 0 or 1 items left so text is not needed so don't show it
-		stackText.text = items.Count > 1 ? items.Count.ToString() : string.Empty;
-
-		// Change to the correct item icon
-		ChangeSprite(CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted);	
-
+	
+	/// <summary>
+	/// Adds a stack of items to the slot
+	/// </summary>
+	/// <param name="items">The stack of items to add</param>
+	public void AddItems(Stack<Item> items)
+	{
+		this.items = new Stack<Item>(items); //Adds the stack of items to the slot
+		
+		stackTxt.text = items.Count > 1 ? items.Count.ToString() : string.Empty; //Writes the correct stack number on the icon
+		
+		ChangeSprite(CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted); //Changes the sprite so that it reflects the item the slot is occupied by
 	}
-
-
-	// Uses the item in the slot
-	private void UseItem() {
-		// If there is something in the slot,
-		// pop it from the slot stack and use it
-		if (!IsEmpty) {
-			items.Pop();
-
-			// If more than 1 item left in stack, update text; 
-			// else there are 0 or 1 items left so text is not needed so don't show it
-			stackText.text = items.Count > 1 ? items.Count.ToString() : string.Empty;
-
-			// If there is no longer something in the slot, 
-			// change the sprites to slot sprites instead of item sprites
-			if (IsEmpty) {
-				ChangeSprite(slotEmpty, slotHighlight);	
+	
+	/// <summary>
+	/// Changes the sprite of a slot
+	/// </summary>
+	/// <param name="neutral">The neutral sprite</param>
+	/// <param name="highlight">The highlighted sprite</param>
+	private void ChangeSprite(Sprite neutral, Sprite highlight)
+	{
+		//Sets the neutralsprite
+		GetComponent<Image>().sprite = neutral;
+		
+		//Creates a spriteState, so that we can change the sprites of the different states
+		SpriteState st = new SpriteState();
+		st.highlightedSprite = highlight;
+		st.pressedSprite = neutral;
+		
+		//Sets the sprite state
+		GetComponent<Button>().spriteState = st;
+	}
+	
+	/// <summary>
+	/// Uses an item on the slot.
+	/// </summary>
+	private void UseItem()
+	{
+		if (!IsEmpty) //If there is an item on the slot
+		{
+			items.Pop().Use(); //Removes the top item from the stack and uses it
+			
+			stackTxt.text = items.Count > 1 ? items.Count.ToString() : string.Empty; //Writes the correct stack number on the icon
+			
+			if (IsEmpty) //Checks if we just removed the last item from the inventory
+			{
+				ChangeSprite(slotEmpty, slotHighlight); //Changes the sprite to empty if the slot is empty
 				
-				// Update the number of empty slots in inventory
-				Inventory.EmptySlots++;
+				Inventory.EmptySlots++; //Adds 1 to the amount of empty slots
 			}
 		}
 	}
-
-
-	// Clears the slot
-	public void ClearSlot() {
+	
+	/// <summary>
+	/// Clears the slot
+	/// </summary>
+	public void ClearSlot()
+	{   
+		//Clears all items on the slot
 		items.Clear();
-		ChangeSprite (slotEmpty, slotHighlight);
-		stackText.text = string.Empty;
+		
+		//Changes the sprite to empty
+		ChangeSprite(slotEmpty, slotHighlight);
+		
+		//Clears the text
+		stackTxt.text = string.Empty;
 	}
-
-
+	
+	/// <summary>
+	/// Handles OnPointer events
+	/// </summary>
+	/// <param name="eventData"></param>
+	public void OnPointerClick(PointerEventData eventData)
+	{   
+		//If the right mousebutton was clicked
+		if (eventData.button == PointerEventData.InputButton.Right) 
+		{
+			//Uses an item on the slot
+			UseItem();
+		}
+	}
 }
