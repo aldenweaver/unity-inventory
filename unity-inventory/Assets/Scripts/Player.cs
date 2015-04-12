@@ -43,5 +43,15 @@ public class Player : MonoBehaviour {
 			inventory.AddItem(other.GetComponent<Item>());
 		}
 	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag == "Item") //If we collide with an item that we can pick up
+		{
+			inventory.AddItem(collision.gameObject.GetComponent<Item>()); //Adds the item to the inventory.
+			
+			Destroy(collision.gameObject);
+		}
+	}
 		                            
 }
