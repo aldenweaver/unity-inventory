@@ -119,43 +119,24 @@ public class Slot : MonoBehaviour, IPointerClickHandler
 		
 		ChangeSprite(CurrentItem.spriteNeutral, CurrentItem.spriteHighlighted); //Changes the sprite so that it reflects the item the slot is occupied by
 	}
-
-	/// <summary>
-	/// Removes an amount of items from the slot and  returns them
-	/// </summary>
-	/// <param name="amount">The amount of items to remove</param>
-	/// <returns>Stack of removed items</returns>
-	public Stack<Item> RemoveItems(int amount)
-	{
-		//Creates a temporary stack for containing the items the we need to remove
-		Stack<Item> tmp = new Stack<Item>();
-		
-		for (int i = 0; i < amount; i++) //Runs through the slots items and pops the into the tmp stack
-		{
-			tmp.Push(items.Pop());
-		}
-		
-		//Makes sure that the correct number is shown on the slot
-		stackTxt.text = items.Count > 1 ? items.Count.ToString() : string.Empty;
-		
-		//Returns the items that we just removed
-		return tmp;
-	}
 	
 	/// <summary>
-	/// Removes the top item from the slot and returns it
+	/// Changes the sprite of a slot
 	/// </summary>
-	/// <returns>The removed item</returns>
-	public Item RemoveItem()
+	/// <param name="neutral">The neutral sprite</param>
+	/// <param name="highlight">The highlighted sprite</param>
+	private void ChangeSprite(Sprite neutral, Sprite highlight)
 	{
-		//Remove the item from the stack and stores it in a tmp variable
-		Item tmp = items.Pop();
+		//Sets the neutralsprite
+		GetComponent<Image>().sprite = neutral;
 		
-		//Makes sure that the correct number is shown on the slot
-		stackTxt.text = items.Count > 1 ? items.Count.ToString() : string.Empty;
+		//Creates a spriteState, so that we can change the sprites of the different states
+		SpriteState st = new SpriteState();
+		st.highlightedSprite = highlight;
+		st.pressedSprite = neutral;
 		
-		//Returns the removed item
-		return tmp;
+		//Sets the sprite state
+		GetComponent<Button>().spriteState = st;
 	}
 	
 	/// <summary>
@@ -176,25 +157,6 @@ public class Slot : MonoBehaviour, IPointerClickHandler
 				Inventory.EmptySlots++; //Adds 1 to the amount of empty slots
 			}
 		}
-	}
-
-	/// <summary>
-	/// Changes the sprite of a slot
-	/// </summary>
-	/// <param name="neutral">The neutral sprite</param>
-	/// <param name="highlight">The highlighted sprite</param>
-	private void ChangeSprite(Sprite neutral, Sprite highlight)
-	{
-		//Sets the neutralsprite
-		GetComponent<Image>().sprite = neutral;
-		
-		//Creates a spriteState, so that we can change the sprites of the different states
-		SpriteState st = new SpriteState();
-		st.highlightedSprite = highlight;
-		st.pressedSprite = neutral;
-		
-		//Sets the sprite state
-		GetComponent<Button>().spriteState = st;
 	}
 	
 	/// <summary>
@@ -218,8 +180,8 @@ public class Slot : MonoBehaviour, IPointerClickHandler
 	/// <param name="eventData"></param>
 	public void OnPointerClick(PointerEventData eventData)
 	{   
-		//If the right mousebutton was clicked, and we aren't moving an item and the inventory is visible
-		if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.CanvasGroup.alpha > 0)
+		//If the right mousebutton was clicked
+		if (eventData.button == PointerEventData.InputButton.Right) 
 		{
 			//Uses an item on the slot
 			UseItem();

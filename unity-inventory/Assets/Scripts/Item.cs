@@ -32,28 +32,4 @@ public class Item : MonoBehaviour {
 			break;
 		}
 	}
-
-	public void SetStats(Item item)
-	{
-		this.type = item.type;
-
-		this.spriteNeutral = item.spriteNeutral;
-
-		this.spriteHighlighted = item.spriteHighlighted;
-
-		this.maxStackSize = item.maxStackSize;
-
-		// Model for item
-		//this.environItem = item.environItem;
-
-		switch (type)
-		{
-		case ItemType.DAMAGE:
-			GetComponent<Renderer>().material.color = Color.blue;
-			break;
-		case ItemType.HEALTH:
-			GetComponent<Renderer>().material.color = Color.red;
-			break;
-		}
-	}
 }
